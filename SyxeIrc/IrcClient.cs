@@ -4,12 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 using SyxeIrc.Events;
 
 namespace SyxeIrc
 {
-    class IrcClient
+    public class IrcClient : IDisposable
     {
 
         public delegate void MessageHandler(IrcClient client, IrcMessage message);
@@ -55,8 +54,8 @@ namespace SyxeIrc
             set { tcpClient = value; }
         }
 
-        private NetworkStream networkStream;
-        public NetworkStream NetworkStream
+        private Stream networkStream;
+        public Stream NetworkStream
         {
             get { return networkStream; }
             set { networkStream = value; }
@@ -79,7 +78,7 @@ namespace SyxeIrc
             this.user = user;
             encoding = Encoding.UTF8;
             channels = new ChannelCollection(this);
-
+            Handlers = new Dictionary<string, MessageHandler>();
         }
         public void ConnectAsync()
         {
@@ -92,6 +91,11 @@ namespace SyxeIrc
         {
             tcpClient.EndConnect(result);
             networkStream = tcpClient.GetStream();
+            if (readBuffer == null)
+            {
+                readBuffer = new byte[1024];
+            }
+            OnConnectionComplete(new EventArgs());
             networkStream.BeginRead(readBuffer, readBufferIndex, readBuffer.Length, DataRecieved, null);
 
             if (!string.IsNullOrEmpty(user.Password))
@@ -138,6 +142,13 @@ namespace SyxeIrc
         {
             OnRawMessageRecieved(new RawMessageEventArgs(rawMessage, false));
             var message = new IrcMessage(rawMessage);
+            if (message.Command == "PRIVMSG")
+            {
+                var privMessage = new PrivateMessage(message);
+                OnPrivateMessageRecieved(new PrivateMessageEventArgs(message));
+                if (message.Parameters[0].StartsWith("#"))
+                    OnChannelMessageRecieved(new PrivateMessageEventArgs(message));
+            }
             if (Handlers.ContainsKey(message.Command.ToUpper()))
                 Handlers[message.Command.ToUpper()](this, message);
         }
@@ -146,7 +157,8 @@ namespace SyxeIrc
         {
             if (networkStream != null)
             {
-                message = string.Format(message, format);
+                if (format != null)
+                    message = string.Format(message, format);
                 var data = encoding.GetBytes(message + "\r\n");
                 networkStream.BeginWrite(data, 0, data.Length, MessageSent, message);
             }
@@ -183,7 +195,7 @@ namespace SyxeIrc
             if (!destinations.Any()) throw new InvalidOperationException("Message must have at least one target.");
             if (illegalCharacters.Any(message.Contains)) throw new ArgumentException("Illegal characters are present in message.", "message");
             string to = string.Join(",", destinations);
-            SendRawMessage("PRIVMSG {0} :{1}{2}", to, message);
+            SendRawMessage("PRIVMSG {0} :{1}", to, message);
         }
 
         public void PartChannel(string channel)
@@ -196,8 +208,18 @@ namespace SyxeIrc
 
         public void JoinChannel(string channel)
         {
+            if (!channel.StartsWith("#"))
+            {
+                channel = "#" + channel.ToLower();
+            }
+            else
+            {
+                channel = channel.ToLower();
+            }
             if (Channels.Contains(channel))
+            {
                 throw new InvalidOperationException("Client is not already present in channel.");
+            }
             SendRawMessage("JOIN {0}", channel);
         }
         public event EventHandler<NetworkErrorEventArgs> NetworkError;
@@ -258,6 +280,12 @@ namespace SyxeIrc
         protected internal virtual void OnConnectionComplete(EventArgs e)
         {
             if (ConnectionComplete != null) ConnectionComplete(this, e);
+        }
+
+        public void Dispose()
+        {
+            TcpClient.Close();
+            NetworkStream.Close();
         }
     }
 }
