@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{ABBB7A9A-C1CA-45FC-B694-931B8D5080B9}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{CD9B9D36-3D94-4DD1-A461-29579EA07A2A}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyxeIrc</RootNamespace>
-    <AssemblyName>SyxeIrc</AssemblyName>
+    <RootNamespace>TestSyxeIrc</RootNamespace>
+    <AssemblyName>TestSyxeIrc</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -37,28 +39,18 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="SyxeIrc, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SyxeIrc\bin\Debug\SyxeIrc.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChannelCollection.cs" />
-    <Compile Include="Events\ChannelEventArgs.cs" />
-    <Compile Include="Events\ChannelUserEventArgs.cs" />
-    <Compile Include="Events\ModeChangeEventArgs.cs" />
-    <Compile Include="Events\NetworkErrorEventArgs.cs" />
-    <Compile Include="Events\PrivateMessageEventArgs.cs" />
-    <Compile Include="Events\RawMessageEventArgs.cs" />
-    <Compile Include="Events\ServerMOTDEventArgs.cs" />
-    <Compile Include="Handlers\ChannelHandlers.cs" />
-    <Compile Include="Handlers\IrcMessageHandlers.cs" />
-    <Compile Include="Handlers\MOTDHandlers.cs" />
-    <Compile Include="IrcChannel.cs" />
-    <Compile Include="IrcClient.cs" />
-    <Compile Include="IrcMessage.cs" />
-    <Compile Include="IrcProtocolException.cs" />
-    <Compile Include="IrcUser.cs" />
-    <Compile Include="PrivateMessage.cs" />
+    <Compile Include="Private.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequestManager.cs" />
-    <Compile Include="UserCollection.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

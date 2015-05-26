@@ -41,6 +41,15 @@ namespace SyxeIrc
                 isChannelMessage = true;
             else
                 source = user.Name;
+            if (message.Parameters[1].StartsWith("☺ACTION"))
+            {
+                message.Parameters[1] = message.Parameters[1].Substring(6);
+                message.Parameters[1] = message.Parameters[1].TrimEnd('☺');
+            }
+            var parameters = message.Parameters[1];
+            var x = parameters.Split(' ');
+            
+            message.Parameters = parameters.Split(' ');
         }
     }
 }

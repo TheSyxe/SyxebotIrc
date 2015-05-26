@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using SyxeIrc.Events;
 
 namespace SyxeIrc.Handlers
@@ -16,6 +12,11 @@ namespace SyxeIrc.Handlers
             client.SetHandler("MODE", HandleMode);
             client.SetHandler("JOIN", ChannelHandlers.HandleJoin);
             client.SetHandler("PART", ChannelHandlers.HandlePart);
+
+            // MOTD Handlers
+            client.SetHandler("001", MOTDHandlers.HandleMOTDStart);
+            client.SetHandler("372", MOTDHandlers.HandleMOTD);
+            client.SetHandler("376", MOTDHandlers.HandleEndOfMOTD);
         }
         public static void HandlePing(IrcClient client, IrcMessage message)
         {

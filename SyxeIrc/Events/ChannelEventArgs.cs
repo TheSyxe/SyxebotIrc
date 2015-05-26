@@ -4,7 +4,7 @@ namespace SyxeIrc.Events
 {
     public class ChannelEventArgs : EventArgs
     {
-        public IrcChannel Channel { get; set; }
+        public IrcChannel Channel { get; internal set; }
 
         public ChannelEventArgs(IrcChannel channel)
         {
